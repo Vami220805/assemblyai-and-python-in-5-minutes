@@ -6,13 +6,13 @@ import utils
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('audio_file', help='url to file or local audio filename')
-    parser.add_argument('--local', action='store_true', help='must be set if audio_file is a local filename')
+    parser.add_argument('--local', action='store_false', help='must be set if audio_file is a local filename')
     parser.add_argument('--api_key', action='store', help='<YOUR-API-KEY>')
 
     args = parser.parse_args()
 
     if args.api_key is None:
-        args.api_key = os.getenv("AAI_API_KEY")
+        args.api_key = "43dd5faecfcf44a5827711eadabd0e0b"
         if args.api_key is None:
             raise RuntimeError("AAI_API_KEY environment variable not set. Try setting it now, or passing in your "
                                "API key as a command line argument with `--api_key`.")
