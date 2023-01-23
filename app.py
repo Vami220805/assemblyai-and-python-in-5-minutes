@@ -33,6 +33,12 @@ def bestandvertaling():
     tekst = subprocess.stdout.read()
     print(tekst)
 
+def tekstvertaling():
+    global tekst
+    vlak = tk.Entry()
+    vlak.grid(row=4, column=0)
+    tekst=vlak.get()
+
 def vertaling():
     global tekst
     url = "https://google-translate1.p.rapidapi.com/language/translate/v2"
@@ -46,11 +52,15 @@ def vertaling():
     response = requests.request("POST", url, data=payload, headers=headers)
     print(response.text)
 
+label = tk.Label(master=venster, text="vetaalapp")
+label.grid(row=0, column=0)
 knop1 = tk.Button(master=venster, text="spraakvertaling", command=spraakvertaling, width=15, height=2)
-knop1.grid(row= 0, column=0)
+knop1.grid(row= 1, column=0)
 knop2 = tk.Button(master=venster, text="bestandvertaling", command=bestandvertaling, width=15, height=2)
-knop2.grid(row= 0, column=1)
-knop2 = tk.Button(master=venster, text="vertaling", command=vertaling, width=15, height=2)
-knop2.grid(row= 1, column=0, columnspan = 2)
+knop2.grid(row= 1, column=1)
+knop3 = tk.Button(master=venster, text="tekstvertaling", command=tekstvertaling, width=15, height=2)
+knop3.grid(row= 1, column=2)
+knop4 = tk.Button(master=venster, text="vertaling", command=vertaling, width=15, height=2)
+knop4.grid(row= 2, column=0)
 
 venster.mainloop()
