@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 import subprocess
 import requests
 import speech_recognition as sr
@@ -21,9 +22,12 @@ def spraakvertaling():
             print("unknown error occurred")
 
 def bestandvertaling():
-    subprocess = subprocess.Popen("py transcribe.py audio.mp3", shell=True, stdout=subprocess.PIPE)
+    tk.Tk().withdraw() # prevents an empty tkinter window from appearing
+    folder_path = filedialog.askdirectory()
+    if not folder_path.lower().endswith(('.mp3', '.m4a', '.aac', '.wav')):
+        return("Incorrect file format")
+    subprocess = subprocess.Popen(f"py transcribe.py {folder_path}", shell=True, stdout=subprocess.PIPE)
     subprocess_return = subprocess.stdout.read()
-    print(subprocess_return)
     url = "https://google-translate1.p.rapidapi.com/language/translate/v2"
     payload = f"q={subprocess_return}&target=nl&source=en"
     headers = {
