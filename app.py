@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog
-import subprocess
 import requests
 import speech_recognition as sr
 
