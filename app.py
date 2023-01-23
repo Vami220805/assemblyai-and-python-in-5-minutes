@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import requests
+import os
 import speech_recognition as sr
 
 tekst=""
@@ -26,10 +27,9 @@ def bestandvertaling():
     import subprocess
     global tekst
     tk.Tk().withdraw() # prevents an empty tkinter window from appearing
-    folder_path = filedialog.askdirectory()
-    if not folder_path.lower().endswith(('.mp3', '.m4a', '.aac', '.wav')):
-        return("Incorrect file format")
-    subprocess = subprocess.Popen(f"py transcribe.py {folder_path}", shell=True, stdout=subprocess.PIPE)
+    file_path = filedialog.askopenfilename(filetypes=(("Audio Files", ".wav .ogg .mp3 .aac .m4a"),   ("All Files", "*.*")))
+    file_name = os.path.split(file_path)[1]
+    subprocess = subprocess.Popen(f"py transcribe.py {file_name}", shell=True, stdout=subprocess.PIPE)
     tekst = subprocess.stdout.read()
     print(tekst)
 
