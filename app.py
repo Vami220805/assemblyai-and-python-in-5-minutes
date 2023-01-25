@@ -74,7 +74,8 @@ def bevestigen():
 
 def vertaling():
     msg = tk.Message(master=venster, text = "bezig met vertalen")
-    msg.grid(row=2, column=1)
+    msg.grid(row=0, column=0)
+    venster.update()
     global tekst
     url = "https://google-translate1.p.rapidapi.com/language/translate/v2"
 
