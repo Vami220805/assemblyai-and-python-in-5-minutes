@@ -66,12 +66,8 @@ vlak = ""
 def tekstvertaling():
     knop4 = tk.Button(master=venster, text="vertaling", command=vertaling, width=70, height=2)
     knop4.grid(row= 10, column=0)
-    msg = tk.Message(master=venster, text = "", width=300)
-    msg.grid(row=0, column=0)
     msg = tk.Message(master=venster, text = "tekstvertaling", width=300)
     msg.grid(row=0, column=0)
-    msg = tk.Message(master=venster, text = "", width=300)
-    msg.grid(row=1, column=0)
     global vlak
     global tekst
     button = tk.Button(master=venster, text="bevestigen", command=bevestigen)
