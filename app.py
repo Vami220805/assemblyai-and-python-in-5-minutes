@@ -3,6 +3,8 @@ from tkinter import filedialog
 import requests
 import os
 import speech_recognition as sr
+import sounddevice as sd
+from scipy.io.wavfile import write
 
 tekst=""
 record = 0
@@ -23,30 +25,15 @@ def record1():
 
 knop5,knop6, msg1 = "","",""
 def spraakvertaling():
-    global record
-    global tekst
-    global knop5, knop6, msg1
-    knop6 = tk.Button(master=venster, text="start",command=record1)
-    knop5 = tk.Button(master=venster, text="stop",command=record2)
-    knop5.grid(row= 1, column=0)
-    knop6.grid(row=2, column=0)
-    print(record)
-    if record==1:
-        msg1 = tk.Message(master=venster, text = "aan het opnemen")
-        msg1.grid(row=2, column=1)
-    else:
-        msg1 = tk.Message(master=venster, text = "niet aan het opnemen")
-        msg1.grid(row=2, column=1)
-    venster.update()
-    while record==1:
-        venster.update()
-        r = sr.Recognizer()
-        with sr.Microphone() as source2:
-            r.adjust_for_ambient_noise(source2, duration=0.2)
-            audio2 = r.listen(source2)
-            MyText = r.recognize_google(audio2)
-            tekst = MyText.lower()
-            print(tekst)
+    fs = 44100  # Sample rate
+    seconds = 3  # Duration of recording
+
+    myrecording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
+    sd.wait()  # Wait until recording is finished
+    write('output.wav', fs, myrecording)  # Save as WAV file 
+    subprocess = subprocess.Popen(f"py transcribe.py output.wav", shell=True, stdout=subprocess.PIPE)
+    tekst = subprocess.stdout.read()
+    print(tekst)
 
 def bestandvertaling():
     import subprocess
