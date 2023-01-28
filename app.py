@@ -84,10 +84,12 @@ def spraakvertaling():
     except AttributeError:
         pass
     venster.update()
-    knop = tk.Button(master=venster, text="vertaling", command=vertaling, width=70, height=2)
+    knop = tk.Button(master=venster, text="vertaling", command=vertaling, font=("Arial", 15))
     knop.place(relx=0.5, rely=0.85, anchor="center")
-    msgSV = tk.Message(master=venster, text = "spraakvertaling", width=300)
+    msgSV = tk.Message(master=venster, text = "spraakvertaling", width=300, font=("Arial", 20))
     msgSV.place(relx=0.5, rely=0.05, anchor="center")
+
+    # hier moet nog de code voor spraakvertaling
 
 def bestandvertaling():
     global tekst,knop,msgBV,msg1,msgSV,msg2,msgTV,button,vlak,msg3,msg4,labelHome1,labelHome2,labelHome3,msg5
@@ -149,20 +151,19 @@ def bestandvertaling():
         pass
     venster.update()
     import subprocess
-    knop = tk.Button(master=venster, text="vertaling", command=vertaling, width=70, height=2)
+    knop = tk.Button(master=venster, text="vertaling", command=vertaling, font=("Arial", 15))
     knop.place(relx=0.5, rely=0.85, anchor="center")
-    msgBV = tk.Message(master=venster, text = "bestandvertaling", width=300)
+    msgBV = tk.Message(master=venster, text = "bestandvertaling", width=300, font=("Arial", 20))
     msgBV.place(relx=0.5, rely=0.05, anchor="center")
     file_path = filedialog.askopenfilename(filetypes=(("Audio Files", ".wav .ogg .mp3 .aac .m4a"),   ("All Files", "*.*")))
     file_name = os.path.split(file_path)[1]
-    msg1 = tk.Message(master=venster, text = "bestand omzetten naar tekt", width=300)
-    msg1.place(relx=0.5, rely=0.45, anchor="center")
+    msg1 = tk.Message(master=venster, text = "bestand omzetten naar tekt", width=300, font=("Arial", 12))
+    msg1.place(relx=0.5, rely=0.40, anchor="center")
     venster.update()
     subprocess = subprocess.Popen(f"py transcribe.py {file_name}", shell=True, stdout=subprocess.PIPE)
     tekst = subprocess.stdout.read()
-    msg2 = tk.Message(master=venster, text = "omzetten naar tekst is gelukt", width=300)
-    msg2.place(relx=0.5, rely=0.45, anchor="center")
-    print(tekst)
+    msg2 = tk.Message(master=venster, text = "omzetten naar tekst is gelukt", width=300, font=("Arial", 12))
+    msg2.place(relx=0.5, rely=0.40, anchor="center")
     tk.messagebox.showwarning("bestand",tekst)
 
 
@@ -225,11 +226,11 @@ def tekstvertaling():
     except AttributeError:
         pass
     venster.update()
-    msgTV = tk.Message(master=venster, text = "tekstvertaling", width=300)
+    msgTV = tk.Message(master=venster, text = "tekstvertaling", width=300, font=("Arial", 20))
     msgTV.place(relx=0.5, rely=0.05, anchor="center")
-    button = tk.Button(master=venster, text="bevestigen", command=bevestigen, width=70, height=2)
-    button.place(relx=0.5, rely=0.3, anchor="center")
-    vlak = tk.Entry()
+    button = tk.Button(master=venster, text="bevestigen", command=bevestigen, font=("Arial", 15))
+    button.place(relx=0.5, rely=0.85, anchor="center")
+    vlak = tk.Entry(master=venster, font=("Arial", 12))
     vlak.place(relx=0.5, rely=0.2, anchor="center")
     
 
@@ -239,13 +240,13 @@ def bevestigen():
         button.after(0, button.destroy())
     except AttributeError:
         pass
-    knop = tk.Button(master=venster, text="vertaling", command=vertaling, width=70, height=2)
+    knop = tk.Button(master=venster, text="vertaling", command=vertaling, font=("Arial", 15))
     knop.place(relx=0.5, rely=0.85, anchor="center")
     venster.update()
     tekst=vlak.get()
 
 def vertaling():
-    global tekst,msg1,msg2,msg3,msg4,msg5,knop
+    global tekst,msg1,msg2,msg3,msg4,msg5,knop,vlak
     try:
         msg1.after(0, msg1.destroy())
     except AttributeError:
@@ -260,8 +261,8 @@ def vertaling():
         pass
     venster.update()
     try:
-        msg3 = tk.Message(master=venster, text = "bezig met vertalen", width=300)
-        msg3.place(relx=0.5, rely=0.2, anchor="center")
+        msg3 = tk.Message(master=venster, text = "bezig met vertalen", width=300, font=("Arial", 12))
+        msg3.place(relx=0.5, rely=0.4, anchor="center")
         url = "https://google-translate1.p.rapidapi.com/language/translate/v2"
 
         payload = f"q={tekst}&target=nl&source=en"
@@ -274,18 +275,21 @@ def vertaling():
 
         response = requests.request("POST", url, data=payload, headers=headers)
 
-        print(response.json())
-        msg4 = tk.Message(master=venster, text = "vertaling is gelukt", width=300)
-        msg4.place(relx=0.5, rely=0.2, anchor="center")
+        msg4 = tk.Message(master=venster, text = "vertaling is gelukt", width=300, font=("Arial", 12))
+        msg4.place(relx=0.5, rely=0.4, anchor="center")
         text = response.json()
         try:
             knop.after(0, knop.destroy())
         except AttributeError:
             pass
+        try:
+            vlak.delete(0, tk.END)
+        except AttributeError:
+            pass
         tk.messagebox.showwarning("vertaling",text["data"]["translations"][0]["translatedText"])
     except KeyError:
-        msg5 = tk.Message(master=venster, text = "vertaling mislukt", width=300)
-        msg5.place(relx=0.5, rely=0.2, anchor="center")
+        msg5 = tk.Message(master=venster, text = "vertaling mislukt", width=300, font=("Arial", 12))
+        msg5.place(relx=0.5, rely=0.4, anchor="center")
 
 
 labelHome1 = tk.Label(master=venster, text="Welkom op de homepagina", font=("Arial", 20))
