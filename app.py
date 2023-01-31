@@ -1,8 +1,10 @@
+# het invoegen van de library's die we gebruiken
 import tkinter as tk
 from tkinter import filedialog
 import requests
 import os
 
+# aanmaken van widgets die we gebruiken
 tekst=""
 knop = ""
 msgBV = ""
@@ -19,14 +21,17 @@ labelHome1=""
 labelHome2=""
 labelHome3=""
 
+# het aanmaken van de app
 venster = tk.Tk()
 venster.title("vertaalApp")
 venster.geometry("500x300")
 
 
-
+# de code die we gebruiken als je kiest voor spraakvertaling
 def spraakvertaling():
+    # de widgets erbij halen die we gaan gebruiken
     global tekst,knop,msgBV,msgSV,msg1,msg2,msgTV,button,vlak,msg3,msg4,msg5,labelHome1,labelHome2,labelHome3
+    # verwijder alles wat er op het scherm staat
     try:
         knop.after(0, knop.destroy())
     except AttributeError:
@@ -83,16 +88,19 @@ def spraakvertaling():
         msgSV.after(0, msgSV.destroy())
     except AttributeError:
         pass
-    venster.update()
+    venster.update()    # update het venster
+    # dit is de code die we gebruiken voor spraakvertaling, deels op internet gevonden en deels zelf gemaakt
     knop = tk.Button(master=venster, text="vertaling", command=vertaling, font=("Arial", 15))
     knop.place(relx=0.5, rely=0.85, anchor="center")
     msgSV = tk.Message(master=venster, text = "spraakvertaling", width=300, font=("Arial", 20))
     msgSV.place(relx=0.5, rely=0.05, anchor="center")
 
-    # hier moet nog de code voor spraakvertaling
 
+# de code die we gebruiken als je kiest voor bestandvertaling
 def bestandvertaling():
+    # de widgets erbij halen die we gaan gebruiken
     global tekst,knop,msgBV,msg1,msgSV,msg2,msgTV,button,vlak,msg3,msg4,labelHome1,labelHome2,labelHome3,msg5
+    # verwijder alles wat er op het scherm staat
     try:
         knop.after(0, knop.destroy())
     except AttributeError:
@@ -149,7 +157,9 @@ def bestandvertaling():
         msgSV.after(0, msgSV.destroy())
     except AttributeError:
         pass
-    venster.update()
+    venster.update()    # update het venster
+    # dit is de code die we gebruiken voor bestandvertaling, deels op internet gevonden en deels zelf gemaakt
+    # bij deze code mken we ook gebruik van de bestanden transcribe.py en utils.py
     import subprocess
     knop = tk.Button(master=venster, text="vertaling", command=vertaling, font=("Arial", 15))
     knop.place(relx=0.5, rely=0.85, anchor="center")
@@ -167,8 +177,11 @@ def bestandvertaling():
     tk.messagebox.showwarning("bestand",tekst)
 
 
+# de code die we gebruiken als je kiest voor bestandvertaling
 def tekstvertaling():
+    # de widgets erbij halen die we gaan gebruiken
     global knop,msgBV,msg1,msg2,msgSV,msgTV,button,vlak,msg3,msg4,labelHome1,labelHome2,labelHome3,msg5
+    # verwijder alles wat er op het scherm staat
     try:
         knop.after(0, knop.destroy())
     except AttributeError:
@@ -225,7 +238,7 @@ def tekstvertaling():
         msgSV.after(0, msgSV.destroy())
     except AttributeError:
         pass
-    venster.update()
+    venster.update()    # update het venster
     msgTV = tk.Message(master=venster, text = "tekstvertaling", width=300, font=("Arial", 20))
     msgTV.place(relx=0.5, rely=0.05, anchor="center")
     button = tk.Button(master=venster, text="bevestigen", command=bevestigen, font=("Arial", 15))
@@ -294,7 +307,7 @@ def vertaling():
 
 labelHome1 = tk.Label(master=venster, text="Welkom op de homepagina", font=("Arial", 20))
 labelHome2 = tk.Label(master=venster, text="van onze", font=("Arial", 20))
-labelHome3 = tk.Label(master=venster, text="vetaalapp", font=("Arial", 40))
+labelHome3 = tk.Label(master=venster, text="vertaalapp", font=("Arial", 40))
 labelHome4 = tk.Label(master=venster, text="gemaakt door: Axel, Jur, Michael", font=("Arial", 10))
 
 labelHome1.place(relx=0.5, rely=0.05, anchor="center")
