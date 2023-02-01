@@ -260,6 +260,7 @@ def bestandvertaling():
         knop = tk.Button(master=venster, text="Vertaal gevonden tekst", command=vertaling, font=("Arial", 15))
         knop.place(relx=0.5, rely=0.85, anchor="center")
     else:
+        msg1.after(0, msg1.destroy())
         tk.messagebox.showwarning("Vertaalde tekst","Tekst niet vertaald, probeer alstublieft opnieuw.")
 
 
