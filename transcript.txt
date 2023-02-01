@@ -1,0 +1,1 @@
+Positive, negative or neutral. So, for example, in the State of the Union address, we see that this sentence was classified as positive, whereas this sentence was classified as negative. Content safety defection can flag sensitive content.
