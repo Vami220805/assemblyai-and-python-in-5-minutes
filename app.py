@@ -32,16 +32,19 @@ play_btn=""
 
 # het aanmaken van de app
 venster = tk.Tk()
-venster.title("vertaalApp")
+venster.title("Vertaalapp")
 venster.geometry("500x300")
 
+# maak een wachtrij aan voor de audio data op te slaan
 q = queue.Queue()
+
+# het aanmaken van 2 variabelen voor de spraak--->tekst omzetting
 recording = False
 file_exists = False
 
 
 # de code die we gebruiken als je kiest voor spraakvertaling
-def spraakvertaling():
+def spraak_transcribe():
     # de widgets erbij halen die we gaan gebruiken
     global tekst,knop,msgBV,msgSV,msg1,msg2,msgTV,button,vlak,msg3,msg4,msg5,labelHome1,labelHome2,labelHome3,record_btn,stop_btn,play_btn
     # verwijder alles wat er op het scherm staat
@@ -113,9 +116,14 @@ def spraakvertaling():
         play_btn.after(0, play_btn.destroy())
     except AttributeError:
         pass
+
     venster.update()    # update het venster
+
+    # geef een titel aan het scherm
     msgSV = tk.Message(master=venster, text = "Spraakvertaling", width=300, font=("Arial", 20))
     msgSV.place(relx=0.5, rely=0.05, anchor="center")
+
+    #knoppen voor opname en om opname om te zetten naar tekst
     record_btn = tk.Button(venster, text="Start opname", command=lambda m=1:threading_rec(m))
     record_btn.place(relx=0.5, rely=0.3, anchor="center")
     stop_btn = tk.Button(venster, text="Stop opname", command=lambda m=2:threading_rec(m))
@@ -123,40 +131,58 @@ def spraakvertaling():
     play_btn = tk.Button(venster, text="Zet om naar tekst", command=lambda m=3:threading_rec(m))
     play_btn.place(relx=0.5, rely=0.5, anchor="center")
 
-# de code die we online hebben gevonden voor spraak
+# data in wachtrij zetten
 def callback(indata, frames, time, status):
     q.put(indata.copy())
 
-
+# functie threading_rec met parameter x (x komt van de knoppen hierboven om audio te besturen en om te zetten)
 def threading_rec(x):
-   if x == 1:
-       t1=threading.Thread(target=spraak)
-       t1.start()
-   elif x == 2:
-       global recording
-       recording = False
-       tk.messagebox.showinfo(message="Opname gestopt.")
-   elif x == 3:
-       if file_exists:
-            import subprocess
-            subprocess = subprocess.Popen(f"py transcribe.py trial.wav", shell=True, stdout=subprocess.PIPE)
-            tekst = subprocess.stdout.read()
-            global msg2
-            msg2 = tk.Message(master=venster, text = "omzetten naar tekst is gelukt", width=300, font=("Arial", 12))
-            msg2.place(relx=0.5, rely=0.40, anchor="center")
-            tk.messagebox.showwarning("Vertaalde tekst",tekst)
-            knop = tk.Button(master=venster, text="Vertaal gevonden tekst van EN naar NL", command=vertaling, font=("Arial", 15))
-            knop.place(relx=0.5, rely=0.85, anchor="center")
-       else:
-           tk.messagebox.showerror(message="Geen opname gevonden, probeer opnieuw...")
+    global msg2, msg4,msg5
+    #als x 1 is, start dan een thread met functie spraak()
+    if x == 1:
+        t1=threading.Thread(target=spraak)
+        t1.start()
+        #verwijder oude berichten
+        try:
+            msg2.after(0, msg2.destroy())
+            msg3.after(0, msg3.destroy())
+            msg4.after(0, msg4.destroy())
+            msg5.after(0, msg5.destroy())
+        except AttributeError:
+            pass
+        
+    #als x niet 1 is en x is 2, stop dan de opname
+    elif x == 2:
+        global recording
+        recording = False
+        tk.messagebox.showinfo(message="Opname gestopt.")
+    #als x niet 1 of 2 is en x 3 is, zet het opgenomen bestand dan om naar tekst (zelfde code als bestandvertaling)
+    elif x == 3:
+        if file_exists:
+                import subprocess
+                subprocess = subprocess.Popen(f"py transcribe.py audio.wav", shell=True, stdout=subprocess.PIPE)
+                tekst = subprocess.stdout.read()
+                global knop
+                #als tekst niet leeg is
+                if str(tekst) != "":
+                    msg2 = tk.Message(master=venster, text = "omzetten naar tekst is gelukt", width=300, font=("Arial", 12))
+                    msg2.place(relx=0.5, rely=0.60, anchor="center")
+                    os.remove("audio.wav")
+                tk.messagebox.showwarning("Vertaalde tekst",tekst)
+                #geef de optie om tekst te vertalen naar NL met knop
+                knop = tk.Button(master=venster, text="Vertaal gevonden tekst van EN naar NL", command=vertaling, font=("Arial", 15))
+                knop.place(relx=0.5, rely=0.85, anchor="center")
+        else:
+            tk.messagebox.showerror(message="Geen opname gevonden, probeer opnieuw...")
 
-
+#functie spraak
 def spraak():
     global recording
     recording= True  
     global file_exists
     tk.messagebox.showinfo(message="Begin met opnemen...")
-    with sf.SoundFile("trial.wav", mode='w', samplerate=44100,
+    #schrijf audio bestand met functie soundfile
+    with sf.SoundFile("audio.wav", mode='w', samplerate=44100,
                         channels=2) as file:
             with sd.InputStream(samplerate=44100, channels=2, callback=callback):
                 while recording == True:
@@ -243,26 +269,33 @@ def bestandvertaling():
     import subprocess
     msgBV = tk.Message(master=venster, text = "Bestandvertaling", width=300, font=("Arial", 20))
     msgBV.place(relx=0.5, rely=0.05, anchor="center")
+
+    #audio bestand importeren
     file_path = filedialog.askopenfilename(filetypes=(("Audio Files", ".wav .ogg .mp3 .aac .m4a"),   ("All Files", "*.*")))
     file_name = os.path.split(file_path)[1]
+
     msg1 = tk.Message(master=venster, text = "Bestand omzetten naar tekst, dit kan even duren...", width=300, font=("Arial", 12))
     msg1.place(relx=0.5, rely=0.40, anchor="center")
-    venster.update()
-    if file_name != "":
+    venster.update() # update het venster
+
+    #als er een bestand gevonden is:
+    if str(file_name) != "":
+        #run een commmand om transcribe.py te laten runnen, door middel van module subprocess
         subprocess = subprocess.Popen(f"py transcribe.py {file_name}", shell=True, stdout=subprocess.PIPE)
         tekst = subprocess.stdout.read()
+
         msg1.after(0, msg1.destroy())
-        msg2 = tk.Message(master=venster, text = "omzetten naar tekst is gelukt", width=300, font=("Arial", 12))
+        msg2 = tk.Message(master=venster, text = "Omzetten naar tekst is gelukt", width=300, font=("Arial", 12))
         msg2.place(relx=0.5, rely=0.40, anchor="center")
         tk.messagebox.showwarning("Vertaalde tekst",tekst)
         knop = tk.Button(master=venster, text="Vertaal gevonden tekst", command=vertaling, font=("Arial", 15))
         knop.place(relx=0.5, rely=0.85, anchor="center")
-    else:
+    else:#als er geen bestand gevonden is 
         msg1.after(0, msg1.destroy())
-        tk.messagebox.showwarning("Vertaalde tekst","Tekst niet vertaald, probeer alstublieft opnieuw.")
+        tk.messagebox.showwarning("Vertaalde tekst","Bestand niet omgezet, probeer alstublieft opnieuw.")
 
 
-# de code die we gebruiken als je kiest voor bestandvertaling
+# de code die we gebruiken als je kiest voor tekstvertaling
 def tekstvertaling():
     # de widgets erbij halen die we gaan gebruiken
     global tekst,knop,msgBV,msgSV,msg1,msg2,msgTV,button,vlak,msg3,msg4,msg5,labelHome1,labelHome2,labelHome3,record_btn,stop_btn,play_btn
@@ -357,6 +390,7 @@ def bevestigen():
     venster.update()
     tekst=vlak.get()    # haal de tekst uit entry vlak
 
+#code om te vertalen
 def vertaling():
     # alle overbodige weghalen
     global tekst,msg1,msg2,msg3,msg4,msg5,knop,vlak
@@ -376,7 +410,7 @@ def vertaling():
     try:
         # de online code die we gebruiken om de tekst te vetalen. Als dit niet meer werkt, zijn de gratis karakters voorbij.
         msg3 = tk.Message(master=venster, text = "bezig met vertalen", width=300, font=("Arial", 12))
-        msg3.place(relx=0.5, rely=0.4, anchor="center")
+        msg3.place(relx=0.5, rely=0.6, anchor="center")
         url = "https://google-translate1.p.rapidapi.com/language/translate/v2"
 
         payload = f"q={tekst}&target=nl&source=en"
@@ -390,7 +424,7 @@ def vertaling():
         response = requests.request("POST", url, data=payload, headers=headers)
 
         msg4 = tk.Message(master=venster, text = "vertaling is gelukt", width=300, font=("Arial", 12))
-        msg4.place(relx=0.5, rely=0.4, anchor="center")
+        msg4.place(relx=0.5, rely=0.6, anchor="center")
         text = response.json()
         try:
             knop.after(0, knop.destroy())
@@ -401,9 +435,9 @@ def vertaling():
         except AttributeError:
             pass
         tk.messagebox.showwarning("vertaling",text["data"]["translations"][0]["translatedText"])
-    except KeyError:
+    except:
         msg5 = tk.Message(master=venster, text = "vertaling mislukt", width=300, font=("Arial", 12))
-        msg5.place(relx=0.5, rely=0.4, anchor="center")
+        msg5.place(relx=0.5, rely=0.6, anchor="center")
 
 
 # aanmaken van homepagina
@@ -419,7 +453,7 @@ labelHome4.place(relx=1, rely=1, anchor="se")
 # aanmaken van menubar
 menubar = tk.Menu(venster)  
 vertaler = tk.Menu(menubar, tearoff=0)  
-vertaler.add_command(label="Spraak", command=spraakvertaling)  
+vertaler.add_command(label="Spraak", command=spraak_transcribe)  
 vertaler.add_command(label="Bestand", command=bestandvertaling)  
 vertaler.add_command(label="Tekst vertaler", command=tekstvertaling)
 vertaler.add_separator()
