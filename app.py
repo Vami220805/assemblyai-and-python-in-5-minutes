@@ -35,9 +35,7 @@ venster = tk.Tk()
 venster.title("vertaalApp")
 venster.geometry("500x300")
 
-#Create a queue to contain the audio data
 q = queue.Queue()
-#Declare variables and initialise them
 recording = False
 file_exists = False
 
